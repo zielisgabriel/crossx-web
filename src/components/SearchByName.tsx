@@ -44,7 +44,7 @@ export function SearchByName() {
                 placeholder="Busque por nome"
                 autoComplete="off"
             />
-            <button type="submit" disabled={formState.isSubmitting} className="cursor-pointer bg-secondary px-5 rounded-r-sm h-10">
+            <button type="submit" disabled={formState.isSubmitting} className="cursor-pointer bg-secondary px-5 rounded-r-sm h-10 border-1 border-for-border">
                 <Search />
             </button>
         </form>

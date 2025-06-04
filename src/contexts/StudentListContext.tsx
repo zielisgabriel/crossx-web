@@ -1,6 +1,7 @@
 "use client"
 
-import { createContext, ReactNode, use, useEffect, useState } from "react";
+import { createContext, ReactNode, useCallback, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 interface Student {
     student_id: number;
@@ -15,41 +16,95 @@ interface Student {
     due_date: Date;
 }
 
+interface Payment {
+    payment_id: number;
+    student_id: number;
+    amount: number;
+    payment_method: string;
+    payment_date: Date;
+}
+
+interface UpdateStudentFormInputsProps {
+    name: string;
+    status: "Matriculado" | "Não Matriculado" | "Pendente";
+    state: string;
+    city: string;
+    address: string;
+    phone: string;
+}
+
 interface StudentListContextProps {
     students: Student[];
+    payments: Payment[];
+
+    onLoadStudents: () => Promise<void>;
+    onLoadPayments: (student_id: number) => Promise<void>;
     onDeleteStudent: (student_id: number) => Promise<void>;
     onFindByStudentName: (name: string) => Promise<void>;
-    onLoadStudents: () => Promise<void>;
+    onUpdateStudent: (student_id: number, data: UpdateStudentFormInputsProps) => Promise<void>;
 }
 
 export const StudentListContext = createContext({} as StudentListContextProps);
 
 export function StudentListProvider({children}: {children: ReactNode}) {
     const [students, setStudents] = useState<Student[]>([]);
+    const [payments, setPayments] = useState<Payment[]>([]);
 
-    async function onLoadStudents() {
-        const response = await fetch("http://localhost:5000/students/list", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
+    const onLoadStudents = useCallback(async() => {
+        try {
+            const response = await fetch("http://localhost:5000/students/list", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
 
-        const data = await response.json();
+            const data = await response.json();
 
-        setStudents(data["students"]);
-    }
+            setStudents(data["students"]);
+        } catch (e: any) {
+            toast.error(e.message);
+        }
+    }, [])
 
-    async function onDeleteStudent(student_id: number) {
-        await fetch(`http://localhost:5000/students/delete/${student_id}`, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
+    const onLoadPayments = useCallback(async(student_id: number) => {
+        try {
+            const response = await fetch(`http://localhost:5000/payments/list/${student_id}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
 
-        setStudents(value => value.filter(student => student.student_id !== student_id));
-    }
+            const data = await response.json();
+
+            setPayments(data["payments"]);
+        } catch (e: any) {
+            toast.error(e.message);
+        }
+    }, [])
+
+    const onDeleteStudent = useCallback(async (student_id: number) => {
+        try {
+            const response = await fetch(`http://localhost:5000/students/delete/${student_id}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+
+            if (response.status !== 200) {
+                const data: any = await response.json();
+                throw new Error(data.message);
+            }
+
+            toast.success("Aluno deletado com sucesso!");
+
+            setStudents(value => value.filter(student => student.student_id !== student_id));
+        } catch (e: any) {
+            toast.error(e.message);
+        }
+    }, [])
 
     async function onFindByStudentName(name: string) {
         const response = await fetch(`http://localhost:5000/students/find?name=${name}`, {
@@ -64,12 +119,35 @@ export function StudentListProvider({children}: {children: ReactNode}) {
         setStudents(data["students"]);
     }
 
+    const onUpdateStudent = useCallback(async(student_id: number, data: UpdateStudentFormInputsProps) => {
+        try {
+            const response = await fetch(`http://localhost:5000/students/update/${student_id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            })
+
+            if (response.status != 200) {
+                const data: any = await response.json();
+                throw new Error(data.message);
+            }
+
+            toast.success("Aluno atualizado com sucesso!");
+
+            onLoadStudents();
+        } catch (e: any) {
+            toast.error(e.message);
+        }
+    }, [])
+
     useEffect(() => {
         onLoadStudents();
     }, []);
 
     return (
-        <StudentListContext.Provider value={{students, onDeleteStudent, onFindByStudentName, onLoadStudents}}>
+        <StudentListContext.Provider value={{students, onDeleteStudent, onFindByStudentName, onLoadStudents, onUpdateStudent, payments, onLoadPayments}}>
             {children}
         </StudentListContext.Provider>
     )

@@ -9,12 +9,22 @@ import clsx from "clsx";
 export function StudentList() {
     const {students, onDeleteStudent} = useContext(StudentListContext);
 
+    
+
+    if (students && students.length === 0) {
+        return (
+            <p className="text-center opacity-55 text-md mt-12">
+                Nenhum aluno cadastrado
+            </p>
+        );
+    }
+
     return (
         <ul className="flex flex-col gap-2">
             {
                 students.map((student) => {
                     return (
-                        <li key={student.student_id} className="flex justify-center items-center bg-secondary p-4 h-24 rounded-sm w-xl">
+                        <li key={student.student_id} className="flex justify-center items-center bg-secondary p-4 h-24 rounded-sm w-full border-1 border-for-border">
                             <div className="grid grid-cols-[_1fr_1.8fr_1fr] gap-2 justify-between items-center w-full">
                                 <p className="flex gap-2 items-center">
                                     <span className={clsx("block w-2 h-2 rounded-full",
@@ -32,12 +42,13 @@ export function StudentList() {
 
                                 <div className="flex gap-2">
                                     <DetailsViewButton
+                                        student_id={student.student_id}
                                         name={student.name}
                                         address={student.address}
                                         city={student.city}
                                         state={student.state}
-                                        phone={student.phone}
                                         status={student.status}
+                                        phone={student.phone}
                                         registrationDate={student.registration_date ? new Date(student.registration_date) : null}
                                         terminationDate={student.termination_date ? new Date(student.termination_date) : null}
                                         dueDate={student.due_date ? new Date(student.due_date) : null}

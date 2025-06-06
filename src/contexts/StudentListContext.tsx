@@ -52,7 +52,7 @@ export function StudentListProvider({children}: {children: ReactNode}) {
 
     const onLoadStudents = useCallback(async() => {
         try {
-            const response = await fetch("http://localhost:5000/students/list", {
+            const response = await fetch("http://localhost:3103/students/list", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -69,7 +69,7 @@ export function StudentListProvider({children}: {children: ReactNode}) {
 
     const onLoadPayments = useCallback(async(student_id: number) => {
         try {
-            const response = await fetch(`http://localhost:5000/payments/list/${student_id}`, {
+            const response = await fetch(`http://localhost:3103/payments/list/${student_id}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -86,7 +86,7 @@ export function StudentListProvider({children}: {children: ReactNode}) {
 
     const onDeleteStudent = useCallback(async (student_id: number) => {
         try {
-            const response = await fetch(`http://localhost:5000/students/delete/${student_id}`, {
+            const response = await fetch(`http://localhost:3103/students/delete/${student_id}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -107,7 +107,7 @@ export function StudentListProvider({children}: {children: ReactNode}) {
     }, [])
 
     async function onFindByStudentName(name: string) {
-        const response = await fetch(`http://localhost:5000/students/find?name=${name}`, {
+        const response = await fetch(`http://localhost:3103/students/find?name=${name}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -121,7 +121,7 @@ export function StudentListProvider({children}: {children: ReactNode}) {
 
     const onUpdateStudent = useCallback(async(student_id: number, data: UpdateStudentFormInputsProps) => {
         try {
-            const response = await fetch(`http://localhost:5000/students/update/${student_id}`, {
+            const response = await fetch(`http://localhost:3103/students/update/${student_id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

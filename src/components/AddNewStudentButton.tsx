@@ -29,7 +29,7 @@ export function AddNewStudentButton() {
 
     async function addNewStudent(data: AddNewStudentFormInputsProps): Promise<void> {
         try {
-            await fetch("http://localhost:5000/students/create", {
+            await fetch("http://localhost:3103/students/create", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

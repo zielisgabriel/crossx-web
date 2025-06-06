@@ -35,11 +35,11 @@ export function PaymentButton(props: PaymentButtonProps) {
         resolver: zodResolver(PaymentFormInputsSchema),
     });
 
-    const {onLoadStudents} = useContext(StudentListContext);
+    const {onLoadStudents, onLoadPayments} = useContext(StudentListContext);
 
     async function onMakePayment(props: OnMakePaymentProps) {
         try {
-            const response = await fetch(`http://localhost:5000/payments/make/${props.student_id}`, {
+            const response = await fetch(`http://localhost:3103/payments/make/${props.student_id}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -53,6 +53,8 @@ export function PaymentButton(props: PaymentButtonProps) {
             }
 
             toast.success("Pagamento realizado com sucesso!");
+            
+            await onLoadPayments(props.student_id);
         } catch (e: any) {
             toast.error(e.message);
         }
@@ -125,7 +127,7 @@ export function PaymentButton(props: PaymentButtonProps) {
                         </div>
                         <div className="flex flex-col gap-1">
                             <span className="text-sm opacity-80">
-                                Status:
+                                Método:
                             </span>
                             
                             <Controller
